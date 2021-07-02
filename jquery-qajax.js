@@ -9,7 +9,7 @@
 		if (_busy || !_queue.length)
 			return;
 
-		var args = _queue.pop();
+		var args = _queue.shift();
 
 		if (!args || !args.length)
 			return _run();
