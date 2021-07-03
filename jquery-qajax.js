@@ -3,6 +3,7 @@
 // (c) 2021, Ruben Holthuijsen
 (function () {
 	var _queue = [],
+		_keys = {},
 		_busy = false,
 		_run = function () {
 
@@ -11,12 +12,18 @@
 
 		var args = _queue.shift();
 
-		if (!args || !args.length)
-			return _run();
-
-		_busy = true;
-
 		var s = +(args.length != 1);
+
+		while (!args || !args.length || (args[s] && args[s].qKey && _keys[args[s].qKey.toString()] != args)) {
+			if (!_queue.length)
+				return;
+			args = _queue.shift();
+		}
+		
+		if (args[s] && args[s].qKey)
+			delete _keys[args[s].qKey.toString()];
+		
+		_busy = true;
 
 		if (!args[s] || typeof args[s] != 'object')
 			args[s] = {};
@@ -35,6 +42,9 @@
 	$.extend({
 		qAjax: function () {
 			_queue.push(arguments);
+			var s = +(arguments.length != 1);
+			if (arguments[s] && arguments[s].qKey)
+				_keys[arguments[s].qKey.toString()] = arguments;
 			_run();
 		}
 	});
