@@ -1,11 +1,16 @@
-// Queued Ajax for jQuery
-// https://github.com/rhlt/jquery-qajax/
-// (c) 2021, Ruben Holthuijsen
+/*
+qAjax: Queued Ajax for jQuery
+version 21.7.19
+(c) 2021, Ruben Holthuijsen
+https://github.com/rhlt/jquery-qajax/
+*/
 (function () {
-	var _queue = [],
-		_keys = {},
-		_busy = false,
-		_run = function () {
+	
+	var _queue = [];
+	var _keys = {};
+	var _busy = false;
+	
+	var _run = function () {
 
 		if (_busy || !_queue.length)
 			return;
@@ -41,11 +46,27 @@
 
 	$.extend({
 		qAjax: function () {
-			_queue.push(arguments);
-			var s = +(arguments.length != 1);
-			if (arguments[s] && arguments[s].qKey)
-				_keys[arguments[s].qKey.toString()] = arguments;
-			_run();
+			
+			var args = arguments;
+			var timeout = 0;
+			var s = +(args.length != 1);
+			
+			if (args[s] && args[s].qKey)
+				_keys[args[s].qKey.toString()] = args;
+			
+			if (args[s] && args[s].qTimeout)
+				timeout = +args[s].qTimeout;
+			
+			if (timeout > 0) {
+				setTimeout(function () {
+					_queue.push(args);
+					_run();
+				}, timeout);
+			} else {
+				_queue.push(args);
+				_run();
+			}
+			
 		}
 	});
-})();
+})()
