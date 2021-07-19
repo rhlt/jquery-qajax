@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>qAjax demo</title>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+		<script src="jquery-qajax.js"></script><!-- include jquery-qajax.js after jQuery -->
+	</head>
+	<body>
+		<h1>qAjax demo</h1>
+		<p><a href="https://github.com/rhlt/jquery-qajax" target="_blank">https://github.com/rhlt/jquery-qajax</a></p>
+		<form>
+			<p>Type something:</p>
+			<p><input type="text" id="demoInput"></p>
+			<div id="demoOutput"></div>
+		</form>
+		<script>
+			$('#demoInput').on('input', function () {
+				//Fire $.qAjax at every input stroke (use $.bind on jQuery < 1.7)
+				$('#demoOutput').html('<i>Sending ajax request...</i>');
+				$.qAjax('https://httpbin.org/get', {
+					qKey: 'httpbinDemo', //Older queued requests with the same key are skipped
+					qTimeout: 400, //Allow the user to finish typing
+					data: { demoInput: $(this).val() },
+					success: function (data) {
+						if (data && data.args)
+							$('#demoOutput').text(JSON.stringify(data.args));
+					},
+				});
+			});
+		</script>
+	</body>
+</html>
